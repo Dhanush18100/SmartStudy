@@ -28,7 +28,7 @@ const Sidebar = ({ isOpen, onClose }) => {
             )}
 
             {/* Sidebar Container */}
-            <div onClick={onClose} className={`h-screen w-64 bg-white border-r border-gray-200 fixed left-0 top-0 flex flex-col z-30 transition-transform duration-300 transform 
+            <div onClick={onClose} className={`h-full w-64 bg-white border-r border-gray-200 fixed left-0 top-0 flex flex-col z-30 transition-transform duration-300 transform 
                 ${isOpen ? 'translate-x-0' : '-translate-x-full'} 
                 md:translate-x-0`}>
 
