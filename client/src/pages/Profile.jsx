@@ -37,10 +37,10 @@ const Profile = () => {
                     'Content-Type': 'application/json'
                 }
             };
-            const res = await axios.put('http://localhost:5000/api/auth/profile', { name, bio, major }, config);
+            const res = await axios.put(`${import.meta.env.VITE_BACKENDURL}/api/auth/profile`, { name, bio, major }, config);
 
             // Reload user data to update context
-            loadUser();
+            loadUser;
 
             toast.success('Profile updated successfully');
             setIsEditing(false);

@@ -2,13 +2,11 @@ import React, { useContext } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Home, BookOpen, MessageSquare, PlusCircle, LogOut, User, Bookmark } from 'lucide-react';
 import AuthContext from '../../context/AuthContext';
-import { useEffect } from 'react';
 
 const Sidebar = ({ isOpen, onClose }) => {
-    const { logout, user, isAuthenticated } = useContext(AuthContext);
+    const { logout, user } = useContext(AuthContext);
     const location = useLocation();
-    const navigate = useNavigate();
-
+    
     const isActive = (path) => location.pathname === path;
 
     const navItems = [
@@ -18,10 +16,7 @@ const Sidebar = ({ isOpen, onClose }) => {
         { path: '/discussions', icon: MessageSquare, label: 'Discussions' },
         { path: '/resources/create', icon: PlusCircle, label: 'Upload' },
     ];
-
-
-
-
+    const navigate=useNavigate();
     return (
         <>
             {/* Mobile Overlay */}
@@ -33,13 +28,13 @@ const Sidebar = ({ isOpen, onClose }) => {
             )}
 
             {/* Sidebar Container */}
-            <div className={`h-screen w-64 bg-white border-r border-gray-200 fixed left-0 top-0 flex flex-col z-30 transition-transform duration-300 transform 
+            <div onClick={onClose} className={`h-screen w-64 bg-white border-r border-gray-200 fixed left-0 top-0 flex flex-col z-30 transition-transform duration-300 transform 
                 ${isOpen ? 'translate-x-0' : '-translate-x-full'} 
                 md:translate-x-0`}>
 
                 <div className="p-6 flex justify-between items-center">
                     <h1 className="text-2xl font-bold text-primary flex items-center gap-2">
-                        <BookOpen className="w-8 h-8" />
+                        <BookOpen  className="w-8 h-8" />
                         SmartStudy
                     </h1>
                     {/* Close Button for Mobile */}

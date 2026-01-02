@@ -31,7 +31,7 @@ const UploadResource = () => {
         formData.append('file', file);
 
         try {
-            await axios.post('http://localhost:5000/api/resources', formData, {
+            await axios.post(`${import.meta.env.VITE_BACKENDURL}/api/resources`, formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data'
                 }

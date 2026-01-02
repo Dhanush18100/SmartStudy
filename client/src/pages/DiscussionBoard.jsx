@@ -10,7 +10,7 @@ const DiscussionBoard = () => {
     useEffect(() => {
         const fetchDiscussions = async () => {
             try {
-                const res = await axios.get('http://localhost:5000/api/discussions');
+                const res = await axios.get(`${import.meta.env.VITE_BACKENDURL}/api/discussions`);
                 setDiscussions(res.data);
                 setLoading(false);
             } catch (err) {

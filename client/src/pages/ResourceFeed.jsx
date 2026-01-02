@@ -11,12 +11,12 @@ const ResourceFeed = ({ mode = 'grid' }) => {
     useEffect(() => {
         const fetchResources = async () => {
             try {
-                let url = 'http://localhost:5000/api/resources';
+                let url = `${import.meta.env.VITE_BACKENDURL}/api/resources`;
                 if (mode === 'saved') {
-                    url = 'http://localhost:5000/api/resources/saved';
+                    url = `${import.meta.env.VITE_BACKENDURL}/api/resources/saved`;
                 }
                 const res = await axios.get(url);
-                console.log('Fetched resources:', res.data); // Debug log
+                console.log('Fetched resources:', res.data);
                 setResources(res.data);
                 setLoading(false);
             } catch (err) {

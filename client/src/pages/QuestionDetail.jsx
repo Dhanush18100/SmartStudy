@@ -14,7 +14,7 @@ const QuestionDetail = () => {
     useEffect(() => {
         const fetchDiscussion = async () => {
             try {
-                const res = await axios.get(`http://localhost:5000/api/discussions/${id}`);
+                const res = await axios.get(`${import.meta.env.VITE_BACKENDURL}/api/discussions/${id}`);
                 setDiscussion(res.data);
                 setLoading(false);
             } catch (err) {
@@ -29,7 +29,7 @@ const QuestionDetail = () => {
     const handleAnswerSubmit = async (e) => {
         e.preventDefault();
         try {
-            const res = await axios.post(`http://localhost:5000/api/discussions/answer/${id}`, {
+            const res = await axios.post(`${import.meta.env.VITE_BACKENDURL}/api/discussions/answer/${id}`, {
                 text: answerText
             });
             // Update local state by adding the new answer (returned from backend as updated array)

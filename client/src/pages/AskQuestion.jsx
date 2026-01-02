@@ -18,7 +18,7 @@ const AskQuestion = () => {
         e.preventDefault();
         try {
             const tagArray = tags.split(',').map(tag => tag.trim()).filter(tag => tag !== '');
-            await axios.post('http://localhost:5000/api/discussions', {
+            await axios.post(`${import.meta.env.VITE_BACKENDURL}/api/discussions`, {
                 title,
                 content,
                 tags: tagArray
