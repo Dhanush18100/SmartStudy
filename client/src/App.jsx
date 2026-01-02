@@ -1,10 +1,11 @@
-import React from 'react';
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import React, { useEffect } from 'react';
+import { BrowserRouter as Router, Route, Routes, useNavigate } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import Layout from './components/Layout/Layout';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import { Toaster } from 'react-hot-toast';
+
 
 // Protected Route Component (Simple Version)
 import { useContext } from 'react';
@@ -25,6 +26,8 @@ const ProtectedRoute = ({ children }) => {
   if (loading) return <div>Loading...</div>;
   return isAuthenticated ? children : <Navigate to="/" />;
 };
+
+
 
 function App() {
   return (
