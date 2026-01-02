@@ -23,7 +23,7 @@ mongoose.connect(process.env.MONGO_URI)
 
 // app.use('/uploads', express.static('uploads'));
 
-app.options("*", cors());
+
 
 
 // Routes
