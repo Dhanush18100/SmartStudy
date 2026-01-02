@@ -2,10 +2,17 @@ import React, { useState, useContext } from 'react';
 import { ExternalLink, ThumbsUp, User } from 'lucide-react';
 import axios from 'axios';
 import AuthContext from '../../context/AuthContext';
+console.log("ResourceCard file loaded");
+
 
 const ResourceCard = ({ resource }) => {
     const { user } = useContext(AuthContext);
     const [likes, setLikes] = useState(resource.likes || []);
+
+
+    console.log("Original file name:", resource.originalFileName);
+
+
 
 
     // Check if saved. user.savedResources might be undefined initially.
@@ -47,6 +54,28 @@ const ResourceCard = ({ resource }) => {
         }
     };
 
+    const handleDownload = async () => {
+        try {
+            const response = await fetch(resource.fileUrl);
+            if (!response.ok) throw new Error("Failed to fetch file");
+
+            const blob = await response.blob();
+            const url = window.URL.createObjectURL(blob);
+
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = resource.originalFileName;
+            document.body.appendChild(a);
+            a.click();
+
+            document.body.removeChild(a);
+            window.URL.revokeObjectURL(url);
+        } catch (error) {
+            console.error("Download failed:", error);
+        }
+    };
+
+
     return (
         <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden hover:shadow-md transition-shadow">
             {/* Post Header */}
@@ -81,18 +110,16 @@ const ResourceCard = ({ resource }) => {
                     </div>
                     <div className="flex-1 min-w-0">
                         <p className="text-sm font-medium text-gray-900 truncate">
-                           {resource.originalFileName || 'PDF Document'}
+                            {resource.originalFileName || 'PDF Document'}
                         </p>
                         <p className="text-xs text-blue-600">PDF Document</p>
                     </div>
-                    <a
-                        href={resource.fileUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
+                    <button
+                        onClick={handleDownload}
                         className="btn-primary text-xs px-3 py-1.5 h-auto"
                     >
-                        View
-                    </a>
+                        Download
+                    </button>
                 </div>
             </div>
 

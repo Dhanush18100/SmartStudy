@@ -21,7 +21,7 @@ const ResourceFeed = ({ mode = 'grid' }) => {
                 setLoading(false);
             } catch (err) {
                 console.error(err);
-                setLoading(false);
+                 setLoading(false);
             }
         };
 
