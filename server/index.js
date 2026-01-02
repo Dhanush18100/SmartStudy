@@ -11,6 +11,9 @@ const PORT = process.env.PORT || 5000;
 // Middleware
 app.use(cors({
     origin:['http://localhost:5174','https://smartstudy-backend-lewl.onrender.com',
+        {
+             credentials: true,
+        }
     ]
 }));
 app.use(express.json());
@@ -21,6 +24,9 @@ mongoose.connect(process.env.MONGO_URI)
     .catch((err) => console.error('MongoDB Connection Error:', err));
 
 // app.use('/uploads', express.static('uploads'));
+
+app.options("*", cors());
+
 
 // Routes
 app.use('/api/auth', require('./routes/auth'));
