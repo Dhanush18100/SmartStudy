@@ -1,166 +1,109 @@
-import React, { createContext, useReducer, useEffect } from 'react';
-import axios from 'axios';
-import toast from 'react-hot-toast';
+import React, { createContext, useState, useEffect } from "react";
+import axios from "axios";
+import toast from "react-hot-toast";
 
-
-
-const initialState = {
-    token: localStorage.getItem('token'),
-    isAuthenticated: null,
-    loading: true,
-    user: null,
-};
-
-const AuthContext = createContext(initialState);
-
-
-
-const authReducer = (state, action) => {
-    switch (action.type) {
-        case 'USER_LOADED':
-            return {
-                ...state,
-                isAuthenticated: true,
-                loading: false,
-                user: action.payload,
-            };
-        case 'REGISTER_SUCCESS':
-        case 'LOGIN_SUCCESS':
-            localStorage.setItem('token', action.payload.token);
-            return {
-                ...state,
-                ...action.payload,
-                isAuthenticated: true,
-                loading: false,
-            };
-        case 'REGISTER_FAIL':
-        case 'AUTH_ERROR':
-        case 'LOGIN_FAIL':
-        case 'LOGOUT':
-            localStorage.removeItem('token');
-            return {
-                ...state,
-                token: null,
-                isAuthenticated: false,
-                loading: false,
-                user: null,
-            };
-        default:
-            return state;
-    }
-};
+const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-    const [state, dispatch] = useReducer(authReducer, initialState);
+  const [token, setToken] = useState(localStorage.getItem("token"));
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
-    // Load User
-    const loadUser = async () => {
-        if (localStorage.token) {
-            axios.defaults.headers.common['x-auth-token'] = localStorage.token;
-        } else {
-            delete axios.defaults.headers.common['x-auth-token'];
-        }
+  // Set token in axios header
+  const setAuthToken = (token) => {
+    if (token) {
+      axios.defaults.headers.common["x-auth-token"] = token;
+    } else {
+      delete axios.defaults.headers.common["x-auth-token"];
+    }
+  };
 
-        try {
-            const res = await axios.get('http://localhost:5000/api/auth/user');
-            dispatch({
-                type: 'USER_LOADED',
-                payload: res.data,
-            });
-        } catch (err) {
-            dispatch({ type: 'AUTH_ERROR' });
-        }
-    };
+  // Load user on app start
+  const loadUser = async () => {
+    if (!token) {
+      setLoading(false);
+      return;
+    }
 
-    useEffect(() => {
-        loadUser();
-    }, []);
+    setAuthToken(token);
 
-    // Register User
-    const register = async (formData) => {
-        const config = {
-            headers: {
-                'Content-Type': 'application/json',
-            },
-        };
+    try {
+      const res = await axios.get(
+        `${import.meta.env.VITE_BACKENDURL}/api/auth/user`
+      );
+      setUser(res.data);
+      setIsAuthenticated(true);
+    } catch (err) {
+      logout();
+    } finally {
+      setLoading(false);
+    }
+  };
 
-        try {
-            const res = await axios.post('http://localhost:5000/api/auth/register', formData, config);
-            dispatch({
-                type: 'REGISTER_SUCCESS',
-                payload: res.data,
-            });
-            loadUser();
-            toast.success('Registration successful!');
-        } catch (err) {
-            dispatch({
-                type: 'REGISTER_FAIL',
-                payload: err.response?.data?.msg || 'Registration failed',
-            });
-            toast.error(err.response?.data?.msg || 'Registration failed');
-        }
-    };
+  useEffect(() => {
+    loadUser();
+  }, [token]);
 
-    // Login User
-    const login = async (formData) => {
-        const config = {
-            headers: {
-                'Content-Type': 'application/json',
-            },
-        };
+  // Register
+  const register = async (formData) => {
+    try {
+      const res = await axios.post(
+        `${import.meta.env.VITE_BACKENDURL}/api/auth/register`,
+        formData,
+        { headers: { "Content-Type": "application/json" } }
+      );
 
-        try {
-            console.log('Attempting login...');
-            const res = await axios.post('http://localhost:5000/api/auth/login', formData, config);
-            console.log('Login response:', res.data);
+      localStorage.setItem("token", res.data.token);
+      setToken(res.data.token);
+      toast.success("Registration successful!");
+    } catch (err) {
+      toast.error(err.response?.data?.msg || "Registration failed");
+    }
+  };
 
-            // Set token immediately
-            localStorage.setItem('token', res.data.token);
-            axios.defaults.headers.common['x-auth-token'] = res.data.token;
+  // Login
+  const login = async (formData) => {
+    try {
+      const res = await axios.post(
+        `${import.meta.env.VITE_BACKENDURL}/api/auth/login`,
+        formData,
+        { headers: { "Content-Type": "application/json" } }
+      );
 
-            dispatch({
-                type: 'LOGIN_SUCCESS',
-                payload: res.data,
-            });
+      localStorage.setItem("token", res.data.token);
+      setToken(res.data.token);
+      toast.success("Logged in successfully!");
+    } catch (err) {
+      toast.error(err.response?.data?.msg || "Invalid credentials");
+    }
+  };
 
-            await loadUser();
-            toast.success('Logged in successfully!');
-        } catch (err) {
-            console.error('Login error:', err);
-            localStorage.removeItem('token');
-            delete axios.defaults.headers.common['x-auth-token'];
+  // Logout
+  const logout = () => {
+    localStorage.removeItem("token");
+    setAuthToken(null);
+    setToken(null);
+    setUser(null);
+    setIsAuthenticated(false);
+    toast.success("Logged out");
+  };
 
-            dispatch({
-                type: 'LOGIN_FAIL',
-                payload: err.response?.data?.msg || 'Login failed',
-            });
-            toast.error(err.response?.data?.msg || 'Invalid Credentials');
-        }
-    };
-
-    // Logout
-    const logout = () => {
-        dispatch({ type: 'LOGOUT' });
-        toast.success('Logged out');
-
-    };
-
-    return (
-        <AuthContext.Provider
-            value={{
-                token: state.token,
-                isAuthenticated: state.isAuthenticated,
-                loading: state.loading,
-                user: state.user,
-                register,
-                login,
-                logout,
-                loadUser,
-            }}
-        >
-            {children}
-        </AuthContext.Provider>
-    );
+  return (
+    <AuthContext.Provider
+      value={{
+        token,
+        user,
+        isAuthenticated,
+        loading,
+        register,
+        login,
+        logout,
+      }}
+    >
+      {children}
+    </AuthContext.Provider>
+  );
 };
 
 export default AuthContext;

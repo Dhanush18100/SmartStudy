@@ -17,6 +17,10 @@ const ResourceSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
+     originalFileName: {
+      type: String,
+      required: true
+    },
     createdBy: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
@@ -25,26 +29,6 @@ const ResourceSchema = new mongoose.Schema({
     likes: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
-    }],
-    comments: [{
-        user: {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: 'User'
-        },
-        text: {
-            type: String,
-            required: true
-        },
-        name: {
-            type: String
-        },
-        avatar: {
-            type: String
-        },
-        date: {
-            type: Date,
-            default: Date.now
-        }
     }],
     createdAt: {
         type: Date,

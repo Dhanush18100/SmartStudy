@@ -9,6 +9,7 @@ const UploadResource = () => {
     const [description, setDescription] = useState('');
     const [subject, setSubject] = useState('');
     const [file, setFile] = useState(null);
+    const [loading, setLoading] = useState(false)
 
     const onFileChange = (e) => {
         setFile(e.target.files[0]);
@@ -21,6 +22,7 @@ const UploadResource = () => {
             toast.error('Please select a PDF file');
             return;
         }
+        setLoading(true);
 
         const formData = new FormData();
         formData.append('title', title);
@@ -39,6 +41,8 @@ const UploadResource = () => {
         } catch (err) {
             console.error(err);
             toast.error('Failed to upload resource');
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -144,10 +148,14 @@ const UploadResource = () => {
                         </button>
                         <button
                             type="submit"
-                            className="btn-primary"
+                            disabled={loading}
+                            className={`px-5 py-2 rounded-lg text-white transition 
+        ${loading ? 'bg-gray-400 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700'}
+    `}
                         >
-                            Upload Resource
+                            {loading ? 'Uploading...' : 'Upload Resource'}
                         </button>
+
                     </div>
                 </form>
             </div>

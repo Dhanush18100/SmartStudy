@@ -24,13 +24,15 @@ router.post('/', [auth, upload.single('file')], async (req, res) => {
         }
 
         // Upload PDF to Cloudinary
-        const result = await uploadPdfToCloudinary(req.file.buffer);
+        const result = await uploadPdfToCloudinary(req.file.buffer,req.file.originalname);
 
         const newResource = new Resource({
             title,
             description,
             subject,
             fileUrl: result.secure_url,
+             originalFileName: req.file.originalname,
+
             createdBy: req.user.id
         });
 

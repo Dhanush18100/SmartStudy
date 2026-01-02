@@ -82,7 +82,7 @@ const ResourceCard = ({ resource }) => {
                     </div>
                     <div className="flex-1 min-w-0">
                         <p className="text-sm font-medium text-gray-900 truncate">
-                            {resource.fileUrl ? resource.fileUrl.split('/').pop() : 'Attachment'}
+                           {resource.originalFileName || 'PDF Document'}
                         </p>
                         <p className="text-xs text-blue-600">PDF Document</p>
                     </div>

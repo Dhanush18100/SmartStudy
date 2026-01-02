@@ -7,12 +7,15 @@ cloudinary.config({
     api_secret: process.env.CLOUD_API_SECRET,
 });
 
-const uploadPdfToCloudinary = (buffer) => {
+const uploadPdfToCloudinary = (buffer,originalName) => {
     return new Promise((resolve, reject) => {
         const stream = cloudinary.uploader.upload_stream(
             {
                 resource_type: 'raw',
                 folder: 'study-resources',
+                 context: {
+                    original_filename: originalName 
+                }
             },
             (error, result) => {
                 if (result) resolve(result);
