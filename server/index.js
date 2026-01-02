@@ -10,10 +10,8 @@ const PORT = process.env.PORT || 5000;
 
 // Middleware
 app.use(cors({
-    origin:['http://localhost:5174','https://smartstudy-backend-lewl.onrender.com',
-        {
-             credentials: true,
-        }
+    origin:['http://localhost:5174','https://smartstudy-frontend-xunm.onrender.com',
+       
     ]
 }));
 app.use(express.json());
