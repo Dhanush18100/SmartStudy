@@ -1,8 +1,7 @@
 import React, { useState, useContext, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import AuthContext from '../context/AuthContext';
-import { BookOpen } from 'lucide-react';
-
+import { BookOpen, Loader2 } from 'lucide-react';
 
 const Login = () => {
     const authContext = useContext(AuthContext);
@@ -14,12 +13,12 @@ const Login = () => {
         password: '',
     });
 
-    useEffect(() => {
+    const [loading, setLoading] = useState(false);
 
+    useEffect(() => {
         if (isAuthenticated) {
             navigate('/feed');
         }
-
     }, [isAuthenticated, navigate]);
 
     const { email, password } = formData;
@@ -27,10 +26,15 @@ const Login = () => {
     const onChange = (e) =>
         setFormData({ ...formData, [e.target.name]: e.target.value });
 
-    const onSubmit = (e) => {
+    const onSubmit = async (e) => {
         e.preventDefault();
-        console.log('Form submitted with:', { email, password });
-        login({ email, password });
+        setLoading(true);
+
+        try {
+            await login({ email, password });
+        } finally {
+            setLoading(false);
+        }
     };
 
     return (
@@ -54,49 +58,48 @@ const Login = () => {
                 <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
                     <form className="space-y-6" onSubmit={onSubmit}>
                         <div>
-                            <label htmlFor="email" className="block text-sm font-medium text-gray-700">
+                            <label className="block text-sm font-medium text-gray-700">
                                 Email address
                             </label>
-                            <div className="mt-1">
-                                <input
-                                    id="email"
-                                    name="email"
-                                    type="email"
-                                    autoComplete="email"
-                                    required
-                                    value={email}
-                                    onChange={onChange}
-                                    className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-primary focus:border-primary sm:text-sm"
-                                />
-                            </div>
+                            <input
+                                name="email"
+                                type="email"
+                                required
+                                value={email}
+                                onChange={onChange}
+                                className="mt-1 block w-full px-3 py-2 border rounded-md focus:ring-primary focus:border-primary"
+                            />
                         </div>
 
                         <div>
-                            <label htmlFor="password" className="block text-sm font-medium text-gray-700">
+                            <label className="block text-sm font-medium text-gray-700">
                                 Password
                             </label>
-                            <div className="mt-1">
-                                <input
-                                    id="password"
-                                    name="password"
-                                    type="password"
-                                    autoComplete="current-password"
-                                    required
-                                    value={password}
-                                    onChange={onChange}
-                                    className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-primary focus:border-primary sm:text-sm"
-                                />
-                            </div>
+                            <input
+                                name="password"
+                                type="password"
+                                required
+                                value={password}
+                                onChange={onChange}
+                                className="mt-1 block w-full px-3 py-2 border rounded-md focus:ring-primary focus:border-primary"
+                            />
                         </div>
 
-                        <div>
-                            <button
-                                type="submit"
-                                className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary"
-                            >
-                                Sign in
-                            </button>
-                        </div>
+                        <button
+                            type="submit"
+                            disabled={loading}
+                            className={`w-full flex justify-center items-center py-2 px-4 rounded-md text-sm font-medium text-white 
+                                ${loading ? 'bg-blue-400 cursor-not-allowed' : 'bg-primary hover:bg-blue-700'}`}
+                        >
+                            {loading ? (
+                                <>
+                                    <Loader2 className="animate-spin mr-2" size={18} />
+                                    Signing in...
+                                </>
+                            ) : (
+                                'Sign in'
+                            )}
+                        </button>
                     </form>
                 </div>
             </div>

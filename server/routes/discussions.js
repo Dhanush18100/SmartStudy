@@ -71,28 +71,28 @@ router.get('/:id', auth, async (req, res) => {
 router.post('/answer/:id', auth, async (req, res) => {
     try {
         const discussion = await Discussion.findById(req.params.id);
-        const user = await User.findById(req.user.id);
 
         if (!discussion) {
             return res.status(404).json({ msg: 'Discussion not found' });
         }
 
-        const newAnswer = {
+        discussion.answers.unshift({
             text: req.body.text,
-            author: req.user.id,
-            name: user.name,
-            profilePicture: user.profilePicture
-        };
-
-        discussion.answers.unshift(newAnswer);
+            author: req.user.id
+        });
 
         await discussion.save();
 
-        res.json(discussion.answers);
+        // 🔥 RE-FETCH WITH POPULATION
+        const populatedDiscussion = await Discussion.findById(req.params.id)
+            .populate('answers.author', ['name', 'profilePicture']);
+
+        res.json(populatedDiscussion.answers);
     } catch (err) {
         console.error(err.message);
         res.status(500).send('Server error');
     }
 });
+
 
 module.exports = router;
