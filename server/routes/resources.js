@@ -123,6 +123,23 @@ router.get('/saved', auth, async (req, res) => {
     }
 });
 
+router.get("/download/:id", async (req, res) => {
+  const resource = await Resource.findById(req.params.id);
+  if (!resource) return res.sendStatus(404);
+
+  const response = await fetch(resource.fileUrl);
+  const buffer = await response.arrayBuffer();
+
+  res.setHeader(
+    "Content-Disposition",
+    `attachment; filename="${resource.originalFileName}"`
+  );
+  res.setHeader("Content-Type", "application/pdf");
+
+  res.send(Buffer.from(buffer));
+});
+
+
 
 
 module.exports = router;

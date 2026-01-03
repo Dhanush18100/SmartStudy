@@ -5,7 +5,9 @@ import AuthContext from '../../context/AuthContext';
 console.log("ResourceCard file loaded");
 
 
+
 const ResourceCard = ({ resource }) => {
+    console.log("originalFileName from DB:", resource.originalFileName);
     const { user } = useContext(AuthContext);
     const [likes, setLikes] = useState(resource.likes || []);
 
@@ -54,15 +56,29 @@ const ResourceCard = ({ resource }) => {
         }
     };
 
-   const handleDownload = () => {
-  const link = document.createElement("a");
-  link.href = resource.fileUrl;
-  link.download = resource.originalFileName || "document.pdf";
-  link.target = "_blank";
-  document.body.appendChild(link);
-  link.click();
-  document.body.removeChild(link);
+
+    const downloadFile = async () => {
+  const res = await axios.get(
+    `${import.meta.env.VITE_BACKENDURL}/api/resources/download/${resource._id}`,
+    {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("token")}`
+      },
+      responseType: "blob"
+    }
+  );
+
+  const url = window.URL.createObjectURL(res.data);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = resource.originalFileName;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
 };
+
+
+
 
 
 
@@ -104,13 +120,16 @@ const ResourceCard = ({ resource }) => {
                         </p>
                         <p className="text-xs text-blue-600">PDF Document</p>
                     </div>
-                   <button
-  href={resource.fileUrl}
-  download={resource.originalFileName}
-  className="btn-primary"
->
+            <button onClick={downloadFile} className="btn-primary">
   Download PDF
 </button>
+
+
+
+
+
+
+
 
                 </div>
             </div>
