@@ -9,21 +9,21 @@ cloudinary.config({
 
 const uploadPdfToCloudinary = (buffer, originalName) => {
   return new Promise((resolve, reject) => {
-    console.log("Uploading file:", originalName); // 👈 DEBUG
-
-    const safeFileName = originalName.replace(/\s+/g, "_");
+    const safeFileName = originalName
+      .replace(/\s+/g, "_")
+      .replace(".pdf", "");
 
     const stream = cloudinary.uploader.upload_stream(
       {
         resource_type: "raw",
         folder: "study-resources",
-        public_id: safeFileName,      // ✅ MUST INCLUDE EXTENSION
-        access_mode: "public",        // ✅ REQUIRED
+        public_id: safeFileName,
+        type: "upload",        
         overwrite: false,
       },
       (error, result) => {
-        if (result) resolve(result);
-        else reject(error);
+        if (error) return reject(error);
+        resolve(result);
       }
     );
 

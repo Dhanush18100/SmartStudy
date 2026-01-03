@@ -54,26 +54,16 @@ const ResourceCard = ({ resource }) => {
         }
     };
 
-    const handleDownload = async () => {
-        try {
-            const response = await fetch(resource.fileUrl);
-            if (!response.ok) throw new Error("Failed to fetch file");
+   const handleDownload = () => {
+  const link = document.createElement("a");
+  link.href = resource.fileUrl;
+  link.download = resource.originalFileName || "document.pdf";
+  link.target = "_blank";
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+};
 
-            const blob = await response.blob();
-            const url = window.URL.createObjectURL(blob);
-
-            const a = document.createElement("a");
-            a.href = url;
-            a.download = resource.originalFileName;
-            document.body.appendChild(a);
-            a.click();
-
-            document.body.removeChild(a);
-            window.URL.revokeObjectURL(url);
-        } catch (error) {
-            console.error("Download failed:", error);
-        }
-    };
 
 
     return (
@@ -114,12 +104,14 @@ const ResourceCard = ({ resource }) => {
                         </p>
                         <p className="text-xs text-blue-600">PDF Document</p>
                     </div>
-                    <button
-                        onClick={handleDownload}
-                        className="btn-primary text-xs px-3 py-1.5 h-auto"
-                    >
-                        Download
-                    </button>
+                   <button
+  href={resource.fileUrl}
+  download={resource.originalFileName}
+  className="btn-primary"
+>
+  Download PDF
+</button>
+
                 </div>
             </div>
 

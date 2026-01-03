@@ -30,7 +30,7 @@ router.post('/', [auth, upload.single('file')], async (req, res) => {
             title,
             description,
             subject,
-            fileUrl: result.secure_url+"?fl_attachment=true",
+            fileUrl: result.secure_url,
             originalFileName: req.file.originalname,
             createdBy: req.user.id
         });
