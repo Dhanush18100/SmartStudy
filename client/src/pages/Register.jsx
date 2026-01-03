@@ -40,7 +40,7 @@ const Register = () => {
 
     useEffect(() => {
         if (isAuthenticated) {
-            navigate('/resources');
+            navigate('/feed');
         }
     }, [isAuthenticated, navigate]);
 
